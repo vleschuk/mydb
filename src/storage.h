@@ -11,13 +11,14 @@
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/multi_index_container.hpp>
-#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/member.hpp>
 #include <iostream>
 #include <iterator>
 #include <sstream>
 #include <string>
 #include "record.h"
+#include "error.h"
 
 using boost::multi_index_container;
 using namespace boost::multi_index;
@@ -26,23 +27,17 @@ namespace my {
 
 class Storage {
 private:
-/* Define a multi_index_container of records with index on key.
- * This container can be placed in shared memory because:
- *   * Record can be placed in shared memory.
- *   * We are using a Boost.Interprocess specific allocator.
- */
 
-/* see Compiler specifics: Use of member_offset for info on
- * BOOST_MULTI_INDEX_MEMBER
- */
+  struct Key {};
 
   typedef multi_index_container<
     Record,
     indexed_by<
-      ordered_hashed_unique<
+      boost::multi_index::hashed_unique<
+      boost::multi_index::tag<Key>,
       BOOST_MULTI_INDEX_MEMBER(Record, SharedString, key)
     >>,
-    bip::allocator<book, bip::managed_mapped_file::segment_manager>
+    bip::allocator<Record, bip::managed_mapped_file::segment_manager>
   > RecordContainer;
 
 public:
@@ -53,16 +48,20 @@ public:
   Storage &operator=(Storage &&) = delete;
   ~Storage() = default;
 
+  Error addRecord(const std::string &key, const std::string &value);
+  Error getValue(const std::string &key, std::string &value);
+  Error updateRecord(const std::string &key, const std::string &value);
+  Error removeRecord(const std::string &key);
+
 private:
   static const char *MtxUUID_;
+  static const size_t MaxFileSize_;
 
 private:
   bip::managed_mapped_file DBFile_;
   bip::named_mutex RecMtx_;
-  RecordContaiter *Records_ = nullptr;
+  RecordContainer *Records_ = nullptr;
 };
 
 } // namespace my
 #endif // MY_STORAGE_H
-
-

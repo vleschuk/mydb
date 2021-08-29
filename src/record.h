@@ -5,7 +5,7 @@
 #include <boost/interprocess/containers/string.hpp>
 #include <boost/interprocess/managed_mapped_file.hpp>
 
-namespace bip=boost::interprocess;
+namespace bip = boost::interprocess;
 
 namespace my {
 
