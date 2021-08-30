@@ -10,3 +10,19 @@ add_executable(test_storage
     error.cpp
     test_storage.cpp
 )
+
+add_executable(dbserver
+    error.cpp
+    connection.cpp
+    connection_manager.cpp
+    reply.cpp
+    request_handler.cpp
+    request_parser.cpp
+    server.cpp
+    storage.cpp
+    main_server.cpp
+)
+
+add_executable(dbclient
+    main_client.cpp
+)

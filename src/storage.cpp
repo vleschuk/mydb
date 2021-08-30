@@ -78,4 +78,8 @@ Error Storage::removeRecord(const std::string &key) {
   return Error::S_OK;
 }
 
+size_t Storage::size() const {
+  return Records_->size();
+}
+
 } // namespace my

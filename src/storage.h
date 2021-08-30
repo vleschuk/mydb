@@ -53,6 +53,8 @@ public:
   Error updateRecord(const std::string &key, const std::string &value);
   Error removeRecord(const std::string &key);
 
+  size_t size() const;
+
 private:
   static const char *MtxUUID_;
   static const size_t MaxFileSize_;
